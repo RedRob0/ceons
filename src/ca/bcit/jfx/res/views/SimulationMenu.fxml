@@ -19,7 +19,7 @@
                     </GridPane>
                     <FlowPane fx:id="algoCheckBoxContainer" alignment="CENTER" />
 
-                    <Separator />
+                    <Separator/>
 
                     <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                         <VBox alignment="CENTER">
@@ -27,7 +27,9 @@
                             <ComboBox fx:id="generators" promptText="%choose_generator"/>
                         </VBox>
                         <VBox alignment="CENTER">
-                            <!-- TODO TRAFFIC DATA label and drop down FOR TRAFFIC GEN GOES HERE-->
+                            <!-- TODO Still the Traffic Generation section baby!-->
+                            <CeonsLabel fx:id="trafficDataLabel" text="Traffic Data" tooltipText="place holder"/>
+                            <ComboBox fx:id="trafficDataYearSelection" promptText="Custom" onAction="#trafficDataIndexChanged"/>
                         </VBox>
                     </HBox>
 
