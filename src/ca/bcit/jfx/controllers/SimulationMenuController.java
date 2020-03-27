@@ -124,6 +124,18 @@ public class SimulationMenuController implements Initializable {
 	private VBox stepsBetweenErlangs;
 
 	@FXML
+    private ComboBox<String> trafficDataYearSelection;
+
+    @FXML
+    private Label yearRangeLowLabel;
+    @FXML
+    private Label yearRangeHighLabel;
+    @FXML
+    private UIntField yearRangeLowField;
+    @FXML
+    private UIntField yearRangeHighField;
+
+	@FXML
 	private ComboBox<String> algorithms;
 	@FXML
 	private ToggleGroup regeneratorsMetric;
@@ -203,11 +215,64 @@ public class SimulationMenuController implements Initializable {
 		algoCheckBoxContainer.visibleProperty().bind(runMultipleSimulations.selectedProperty());
 		emailInput.visibleProperty().bind(emailCheckbox.selectedProperty());
 		emailInput.managedProperty().bind(emailCheckbox.selectedProperty());
+
+        trafficDataYearSelection.getItems().addAll("Custom", "2018", "2019", "2020", "2021", "2022", "2023");
+        trafficDataYearSelection.setValue("Custom");
 	}
 
 	void setProgressBar(TaskReadyProgressBar progressBar) {
 		SimulationMenuController.progressBar = progressBar;
 	}
+
+	@FXML
+    public void trafficDataIndexChanged(ActionEvent event) {
+	    String trafficDataVal = trafficDataYearSelection.getValue();
+	    System.out.println(trafficDataVal);
+
+	    //TODO i18n transtlation for year range lables
+        yearRangeLowLabel = new CeonsLabel("Year lower range", "placeholder");
+        yearRangeLowLabel.setFont(new Font(10));
+
+        yearRangeLowField = new UIntField(300);
+        yearRangeLowField.setAlignment(Pos.CENTER);
+
+        yearRangeHighLabel = new CeonsLabel("Year upper range", "placeholder");
+        yearRangeHighLabel.setFont(new Font(10));
+
+        yearRangeHighField = new UIntField(700);
+        yearRangeHighField.setAlignment(Pos.CENTER);
+
+        boolean isMultipleSimulationsSelected = runMultipleSimulations.isSelected();
+        if (isMultipleSimulationsSelected){
+            if (!trafficDataVal.equals("Custom")) {
+                multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
+                multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
+
+                multipleSimulationSettingsErlangLowerLimit.getChildren().add(yearRangeLowLabel);
+                multipleSimulationSettingsErlangUpperLimit.getChildren().add(yearRangeHighLabel);
+                multipleSimulationSettingsErlangLowerLimit.getChildren().add(yearRangeLowField);
+                multipleSimulationSettingsErlangUpperLimit.getChildren().add(yearRangeHighField);
+
+            }
+            else {
+                multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
+                multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
+
+                multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
+                multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
+                multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
+                multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighField);
+            }
+        }
+        else {
+            if (!trafficDataVal.equals("Custom")) {
+                erlangIntField.setDisable(true);
+            }
+            else {
+                erlangIntField.setDisable(false);
+            }
+        }
+    }
 
 	@FXML
 	public void multipleSimulationsSelected(ActionEvent e) {
@@ -258,10 +323,12 @@ public class SimulationMenuController implements Initializable {
 			simulationsAtEachErlang.getChildren().remove(simulationRepetitions);
 			simulationsAtEachErlang.getChildren().remove(numRepetitionsPerErlang);
 			/*settings.getChildren().remove(erlangRangeLabel);*/
-			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
+			/*multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
 			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
 			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
-			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);*/
+            multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
+            multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
 			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsLabel);
 			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsField);
 
@@ -273,6 +340,7 @@ public class SimulationMenuController implements Initializable {
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
 		erlangIntField.setVisible(!erlangIntField.isVisible());
+        trafficDataIndexChanged(e);
 	}
 
 	@FXML
