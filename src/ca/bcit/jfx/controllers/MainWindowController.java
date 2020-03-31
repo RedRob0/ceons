@@ -123,10 +123,8 @@ public class MainWindowController implements Initializable {
     private TitledPane liveInfoPane;
     @FXML
     private Slider zoomSlider;
-
     @FXML
     private Button updateTopologyButton;
-
     @FXML
     private ComboBox<String> localeCombo;
 
