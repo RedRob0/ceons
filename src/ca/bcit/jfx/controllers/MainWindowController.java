@@ -3,6 +3,13 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.Application;
 import ca.bcit.ApplicationResources;
 import ca.bcit.Settings;
+
+import javafx.application.Platform;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.Scene;
+
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.drawing.Link;
@@ -25,6 +32,7 @@ import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.net.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;
@@ -57,6 +65,7 @@ import javafx.scene.paint.Stop;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 import javafx.util.Duration;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.fx.ChartViewer;
@@ -93,6 +102,9 @@ public class MainWindowController implements Initializable {
     public CheckBox TBP;
     public FlowPane algoCheckBoxContainer;
     private int i;
+
+    @FXML
+    private GridPane mainGridPane;
     @FXML
     private Console console;
     @FXML
@@ -111,8 +123,10 @@ public class MainWindowController implements Initializable {
     private TitledPane liveInfoPane;
     @FXML
     private Slider zoomSlider;
+
     @FXML
     private Button updateTopologyButton;
+
     @FXML
     private ComboBox<String> localeCombo;
 
@@ -301,6 +315,68 @@ public class MainWindowController implements Initializable {
             checkBox.setSelected(true);
             algoCheckBoxContainer.getChildren().add(checkBox);
         }
+        //TODO i18n for menubar options
+
+        MenuBar mainWindowBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
+        MenuItem createTopology = new MenuItem("Create Topology");
+        MenuItem loadTopology = new MenuItem("Load Topology");
+        MenuItem updateTopology = new MenuItem("Update Current Topology");
+
+        Menu languageMenu = new Menu("Choose Language");
+        MenuItem englishSelection = new MenuItem("English (Canada)");
+        MenuItem polishSelection = new MenuItem("Polski");
+        MenuItem portugueseSelection = new MenuItem("Português (Brasil)");
+
+        MenuItem exitMenuItem = new MenuItem("Exit");
+
+        createTopology.setOnAction(e -> {
+            try {
+                createButtonClicked();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        loadTopology.setOnAction(e -> loadButtonClicked());
+        updateTopology.setOnAction(e -> {
+            try {
+                updateButtonClicked();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        exitMenuItem.setOnAction(e -> {
+            Platform.exit();
+        });
+        englishSelection.setOnAction(e -> {
+            Settings.CURRENT_LOCALE = LocaleEnum.EN_CA;
+            try {
+                Application.reloadInterface();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        polishSelection.setOnAction(e -> {
+            Settings.CURRENT_LOCALE = LocaleEnum.PL_PL;
+            try {
+                Application.reloadInterface();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        portugueseSelection.setOnAction(e -> {
+            Settings.CURRENT_LOCALE = LocaleEnum.PT_BR;
+            try {
+                Application.reloadInterface();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        fileMenu.getItems().addAll(createTopology, loadTopology, updateTopology, languageMenu, exitMenuItem);
+        mainWindowBar.getMenus().add(fileMenu);
+        languageMenu.getItems().addAll(englishSelection, polishSelection, portugueseSelection);
+        mainGridPane.getChildren().add(mainWindowBar);
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
@@ -450,11 +526,15 @@ public class MainWindowController implements Initializable {
                                     for (NetworkNode n2 : project.getNetwork().getNodes())
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-                                            int totalSlices = linkSpectrum.getSlicesCount();
-                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
-                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            int countOfSlices = 0;
+                                            int occupiedSlices = 0;
+                                            for (Core core: networkLink.getCores()) {
+                                                Spectrum spectrum = n.getID() < n2.getID() ? core.slicesUp : core.slicesDown;
+                                                countOfSlices += spectrum.getSlicesCount();
+                                                occupiedSlices += spectrum.getOccupiedSlices();
+                                            }
+                                            double freeSpacePercentage = 100 - (((double) occupiedSlices / countOfSlices) * 100);
+                                            graph.addLink(n.getPosition(), n2.getPosition(), freeSpacePercentage, networkLink.getLength());
                                         }
                                 }
 
