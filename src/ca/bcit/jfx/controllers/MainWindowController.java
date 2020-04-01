@@ -104,7 +104,7 @@ public class MainWindowController implements Initializable {
     private int i;
 
     @FXML
-    private GridPane mainGridPane;
+    private GridPane mainWindowContainer;
     @FXML
     private Console console;
     @FXML
@@ -268,9 +268,9 @@ public class MainWindowController implements Initializable {
                     throw new RuntimeException(e);
                 }
 
-        localeCombo.setItems(new ObservableListWrapper<>(LocaleEnum.labels()));
+        /*localeCombo.setItems(new ObservableListWrapper<>(LocaleEnum.labels()));
         localeCombo.setValue(Settings.CURRENT_LOCALE.label);
-        localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged);
+        localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged); */
 
         try {
             Utils.setStaticFinal(Console.class, "cout", console);
@@ -315,6 +315,7 @@ public class MainWindowController implements Initializable {
         }
         //TODO i18n for menubar options
 
+        VBox menubarContainer = new VBox();
         MenuBar mainWindowBar = new MenuBar();
         Menu fileMenu = new Menu("File");
         MenuItem createTopology = new MenuItem("Create Topology");
@@ -325,6 +326,10 @@ public class MainWindowController implements Initializable {
         MenuItem englishSelection = new MenuItem("English (Canada)");
         MenuItem polishSelection = new MenuItem("Polski");
         MenuItem portugueseSelection = new MenuItem("Português (Brasil)");
+
+        Menu mouseModeMenu = new Menu("Mouse Mode");
+        MenuItem mouseModeNodeSelect = new MenuItem("Node Selection");
+        MenuItem mouseModeDrag = new MenuItem("Mouse Drag");
 
         MenuItem exitMenuItem = new MenuItem("Exit");
 
@@ -371,10 +376,13 @@ public class MainWindowController implements Initializable {
             }
         });
 
-        fileMenu.getItems().addAll(createTopology, loadTopology, updateTopology, languageMenu, exitMenuItem);
+        fileMenu.getItems().addAll(createTopology, loadTopology, updateTopology, mouseModeMenu, languageMenu, exitMenuItem);
         mainWindowBar.getMenus().add(fileMenu);
+        mouseModeMenu.getItems().addAll(mouseModeNodeSelect, mouseModeDrag);
         languageMenu.getItems().addAll(englishSelection, polishSelection, portugueseSelection);
-        mainGridPane.getChildren().add(mainWindowBar);
+        menubarContainer.getChildren().add(mainWindowBar);
+        mainWindowContainer.getChildren().add(menubarContainer);
+
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
@@ -620,7 +628,7 @@ public class MainWindowController implements Initializable {
                         graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                 }
             }
-            updateTopologyButton.setDisable(false);
+            //updateTopologyButton.setDisable(false);
         }
         finally {
             if (loadSuccessful)
