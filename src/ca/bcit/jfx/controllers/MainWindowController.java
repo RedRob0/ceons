@@ -182,9 +182,7 @@ public class MainWindowController implements Initializable {
     }
 
     @FXML
-    private void nodeSelect() {
-        graph.changeState(DrawingState.clickingState);
-    }
+    private void nodeSelect() { graph.changeState(DrawingState.clickingState); }
 
     @FXML
     private void drag() {
@@ -316,6 +314,7 @@ public class MainWindowController implements Initializable {
         //TODO i18n for menubar options
 
         VBox menubarContainer = new VBox();
+        menubarContainer.backgroundProperty().setValue(null);
         MenuBar mainWindowBar = new MenuBar();
         Menu fileMenu = new Menu("File");
         MenuItem createTopology = new MenuItem("Create Topology");
@@ -348,9 +347,8 @@ public class MainWindowController implements Initializable {
                 ex.printStackTrace();
             }
         });
-        exitMenuItem.setOnAction(e -> {
-            Platform.exit();
-        });
+        mouseModeNodeSelect.setOnAction(e -> nodeSelect());
+        mouseModeDrag.setOnAction(e -> drag());
         englishSelection.setOnAction(e -> {
             Settings.CURRENT_LOCALE = LocaleEnum.EN_CA;
             try {
@@ -375,14 +373,19 @@ public class MainWindowController implements Initializable {
                 ex.printStackTrace();
             }
         });
+        exitMenuItem.setOnAction(e -> {
+            Platform.exit();
+        });
 
         fileMenu.getItems().addAll(createTopology, loadTopology, updateTopology, mouseModeMenu, languageMenu, exitMenuItem);
         mainWindowBar.getMenus().add(fileMenu);
         mouseModeMenu.getItems().addAll(mouseModeNodeSelect, mouseModeDrag);
         languageMenu.getItems().addAll(englishSelection, polishSelection, portugueseSelection);
-        menubarContainer.getChildren().add(mainWindowBar);
-        mainWindowContainer.getChildren().add(menubarContainer);
+        //menubarContainer.getChildren().add(mainWindowBar);
+        //mainWindowContainer.add(menubarContainer, 0, 0);
+        mainWindowContainer.add(mainWindowBar, 0, 0);
 
+        nodeSelect();
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
