@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import ca.bcit.jfx.components.*?>
 
-<GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="900.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController" fx:id="mainGridPane">
+<GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="900.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController" fx:id="mainWindowContainer">
     <columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" />
 		<ColumnConstraints maxWidth="-Infinity" minWidth="250"/>
@@ -36,8 +36,8 @@
                 </GridPane>
                 <Accordion fx:id="accordion" GridPane.columnIndex="1" >
                     <panes>
-                        <!-- This section's functionality has been added to the Menubar -->
-                        <TitledPane fx:id="mainWindow" animated="true" text="%tab_name_general_settings" visible="false" managed="false">
+                        <!-- This section's functionality has been added to the Menubar
+                        <TitledPane fx:id="mainWindow" animated="true" text="%tab_name_general_settings">
                             <content>
                                 <VBox alignment="TOP_CENTER" spacing="8.0">
                                     <children>
@@ -62,7 +62,7 @@
                                 </VBox>
                             </content>
                         </TitledPane>
-                        <!-- see above -->
+                        see above -->
                         <TitledPane animated="true" text="%tab_name_simulation_settings">
                             <content>
                                 <fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml"/>
